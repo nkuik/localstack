@@ -248,12 +248,16 @@ class ProxyListenerSQS(PersistingProxyListener):
         if req_data:
             action = req_data.get('Action')
 
-            if action in ('SendMessage', 'SendMessageBatch') and SQS_BACKEND_IMPL == 'moto':
-                # check message contents
-                for key, value in req_data.items():
-                    if not re.match(MSG_CONTENT_REGEX, str(value)):
-                        return make_requests_error(code=400, code_string='InvalidMessageContents',
-                            message='Message contains invalid characters')
+            if action in ('SendMessage', 'SendMessageBatch'):
+                if SQS_BACKEND_IMPL == 'moto':
+                    # check message contents
+                    for key, value in req_data.items():
+                        if not re.match(MSG_CONTENT_REGEX, str(value)):
+                            return make_requests_error(code=400, code_string='InvalidMessageContents',
+                                message='Message contains invalid characters')
+                elif SQS_BACKEND_IMPL == 'elasticmq' and 'MessageGroupId' in req_data:
+                    # TODO remove this function if we stop using ElasticMQ entirely
+                    del req_data['MessageGroupId']
 
             elif action == 'SetQueueAttributes':
                 # TODO remove this function if we stop using ElasticMQ entirely

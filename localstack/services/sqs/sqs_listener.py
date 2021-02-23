@@ -12,6 +12,7 @@ from localstack.services.sns import sns_listener
 from localstack.utils.common import to_str, clone, path_from_url, get_service_protocol, parse_request_data
 from localstack.utils.analytics import event_publisher
 from localstack.services.install import SQS_BACKEND_IMPL
+SQS_BACKEND_IMPL = "elasticmq"
 from localstack.utils.persistence import PersistingProxyListener
 from localstack.services.awslambda import lambda_api
 from localstack.utils.aws.aws_responses import requests_response, make_requests_error, calculate_crc32
